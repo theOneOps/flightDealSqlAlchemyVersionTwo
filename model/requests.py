@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy import and_
@@ -16,7 +17,7 @@ session = Session()
 
 def addUser(name: str, passwd: str, email: str = "") -> bool:
     try:
-        result = session.query(Users).filter(Users.username == name).one()
+        result = session.query(Users).filter(Users.name == name).one()
         print("user already existed ! ")
         return False
     except NoResultFound:
@@ -54,11 +55,11 @@ def disconnectUser() -> bool:
     return False
 
 
-def searchFlight(type_seat: str, date_dep: str = "", date_arr: str = "",
+def searchFlight(type_seat: str = "", date_dep: str = "", date_arr: str = "",
                  country_dep:
                  str = "",
                  country_arr: str = "",
-                 price: float = math.inf, cmp: str = "equals") -> Any:
+                 price: float = math.inf, cmp: str = "equals", provider_name: str = "") -> Any:
     result = session.query(Flight, Procure, Classe, Price, Provider).join(
         Flight, Flight.id_flight == Procure.id_flight).join(Classe,
                                                             Procure.id_Classe
@@ -82,6 +83,9 @@ def searchFlight(type_seat: str, date_dep: str = "", date_arr: str = "",
     if country_arr != "":
         result = result.filter(Flight.country_arr == country_arr)
 
+    if provider_name != "":
+        result = result.filter(Provider.name_provider == provider_name)
+
     if price != math.inf:
         if cmp == "equals":  # if cmp is '=', then we filter the flight based on the equals price given in parameters
             result = result.filter(Price.price == price)
@@ -100,7 +104,7 @@ def searchFlight(type_seat: str, date_dep: str = "", date_arr: str = "",
 
     if (
             country_dep == "" and country_arr == "" and type_seat == "" and price
-            == math.inf and date_dep == "" and date_arr == ""):
+            == math.inf and date_dep == "" and date_arr == "" and provider_name == ""):
         result = session.query(Flight, Procure, Classe, Price, Provider).join(
             Flight, Flight.id_flight == Procure.id_flight).join(Classe,
                                                                 Procure.id_Classe
@@ -127,5 +131,65 @@ def searchFlight(type_seat: str, date_dep: str = "", date_arr: str = "",
         print("there is no records found for your request !")
 
 
+def bookFlight(classe: str, idflight: int, providername: str) -> str:
+    global userconnect
 
-def bookFlight():
+    if userConnect["id"] is None:
+        print("You need login to proceed")
+        return "You need login to proceed"
+    try:
+        # Recherche du vol
+        flight = session.query(Flight).filter(Flight.id_flight == idflight).first()
+        if not flight:
+            return "Le vol n'existe pas."
+
+        # Recherche du fournisseur
+        provider = session.query(Provider).filter(Provider.name_provider == providername).first()
+        if not provider:
+            return "Le fournisseur n'existe pas."
+
+        # Vérification de la relation flight-provider-class
+        procure = session.query(Procure).filter(
+            Procure.id_flight == idflight,
+            Procure.id_provider == provider.id_provider,
+            Procure.class_.has(name_class=classe)
+        ).first()
+
+        if not procure:
+            return "Le fournisseur ne propose pas cette classe pour ce vol."
+
+        # Vérification de la disponibilité des sièges
+        class_capacity = procure.class_.capacity
+        current_bookings = session.query(Book).filter(
+            Book.id_flight == idflight,
+            Book.id_class == procure.class_.id_class
+        ).count()
+
+        if current_bookings >= class_capacity:
+            return f"Pas de sièges disponibles en classe {classe}."
+
+        # Création de la réservation
+        new_booking = Book(
+            flight_number=current_bookings + 1,
+            date_book=datetime.date.today(),
+            id_price=procure.id_price,
+            id_class=procure.id_class,
+            id_flight=idflight,
+            id_user=userConnect["id"]
+        )
+
+        session.add(new_booking)
+        session.commit()
+        print(f"Réservation réussie en classe {classe} pour le vol {idflight} avec {providername}.")
+        return f"Réservation réussie en classe {classe} pour le vol {idflight} avec {providername}."
+    except NoResultFound:
+        return "Erreur lors de la réservation : données introuvables."
+    except Exception as e:
+        session.rollback()
+        print(f"Erreur lors de la réservation : {str(e)}")
+        return f"Erreur lors de la réservation : {str(e)}"
+
+
+
+# bookFlight("Economy", 1, "Air France")
+
