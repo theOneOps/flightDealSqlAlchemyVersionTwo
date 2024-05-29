@@ -32,7 +32,7 @@ class ControllerGreeting():
                 messagebox.showinfo("Connection",
                                     "You successfully logged in !")
 
-                controller_profil = ControllerProfil(root)
+                controller_search = ControllerProfil(root)
 
 
             else:

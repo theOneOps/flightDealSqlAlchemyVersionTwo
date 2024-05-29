@@ -37,21 +37,21 @@ class Greeting:
 
         self.email_frame: Frame = vie_define_frame(self.container_connection,
                                                     0, 5)
-        self.email_label: Label = vie_define_label(self.passwd_frame,
+        self.email_label: Label = vie_define_label(self.email_frame,
                                                     "Your email", 8,
                                                     0, 5, columnspan=True)
-        self.email_entry: Entry = vie_define_entry(self.passwd_frame, 20, 0, 6,
+        self.email_entry: Entry = vie_define_entry(self.email_frame, 20, 0, 6,
                                                     columnspan=True)
 
 
-        self.btn_create: Button = vie_define_button(self.passwd_frame,
+        self.btn_create: Button = vie_define_button(self.email_frame,
                                                     string="create", col=0,
                                                     row=7,
                                                     function=lambda: print(
                                                         "create account"),
                                                     columnspan=False)
 
-        self.btn_login: Button = vie_define_button(self.passwd_frame,
+        self.btn_login: Button = vie_define_button(self.email_frame,
                                                    string="login", col=1, row=7,
                                                    function=lambda: print(
                                                        "login"),

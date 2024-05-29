@@ -28,6 +28,9 @@ def addUser(name: str, passwd: str, email: str = "") -> bool:
         return True
 
 
+addUser("rohn", "lid", "rohnlid@gmail.com")
+
+
 def connectUser(name: str, passwd: str, email: str = "") -> bool:
     global userConnect
     try:
@@ -44,6 +47,8 @@ def connectUser(name: str, passwd: str, email: str = "") -> bool:
         return False
 
 
+# connectUser("test", "retest")
+
 def disconnectUser() -> bool:
     global userConnect
     if userConnect["id"] is not None:
@@ -55,6 +60,8 @@ def disconnectUser() -> bool:
     return False
 
 
+# disconnectUser()
+
 def searchFlight(type_seat: str = "", date_dep: str = "", date_arr: str = "",
                  country_dep:
                  str = "",
@@ -62,9 +69,9 @@ def searchFlight(type_seat: str = "", date_dep: str = "", date_arr: str = "",
                  price: float = math.inf, cmp: str = "equals", provider_name: str = "") -> Any:
     result = session.query(Flight, Procure, Classe, Price, Provider).join(
         Flight, Flight.id_flight == Procure.id_flight).join(Classe,
-                                                            Procure.id_Classe
+                                                            Procure.id_class
                                                             ==
-                                                            Classe.id_Classe).join(
+                                                            Classe.id_class).join(
         Price, Price.id_price == Procure.id_price).join(Provider,
                                                         Provider.id_provider == Procure.id_provider)
 
@@ -88,17 +95,17 @@ def searchFlight(type_seat: str = "", date_dep: str = "", date_arr: str = "",
 
     if price != math.inf:
         if cmp == "equals":  # if cmp is '=', then we filter the flight based on the equals price given in parameters
-            result = result.filter(Price.price == price)
+            result = result.filter(Price.price_value == price)
         elif cmp == "inf":  # if cmp is '<', then we filter the flight based on the lower price given in parameters
-            result = result.filter(Price.price < price)
+            result = result.filter(Price.price_value < price)
         elif cmp == "infequals":  # if cmp is '<=', then we filter the flight
             # based on the equals or lower price given in parameters
-            result = result.filter(Price.price <= price)
+            result = result.filter(Price.price_value <= price)
         elif cmp == "supequals":  # if cmp is '>=', then we filter the flight
             # based on the equals or upper price given in parameters
-            result = result.filter(Price.price >= price)
+            result = result.filter(Price.price_value >= price)
         elif cmp == "sup":  # if cmp is '>', then we filter the flight based on the upper price given in parameters
-            result = result.filter(Price.price > price)
+            result = result.filter(Price.price_value > price)
         else:  # that sign of cmp is not recognized !
             print("I don't recognize that value of cmp for this research !")
 
@@ -107,9 +114,9 @@ def searchFlight(type_seat: str = "", date_dep: str = "", date_arr: str = "",
             == math.inf and date_dep == "" and date_arr == "" and provider_name == ""):
         result = session.query(Flight, Procure, Classe, Price, Provider).join(
             Flight, Flight.id_flight == Procure.id_flight).join(Classe,
-                                                                Procure.id_Classe
+                                                                Procure.id_class
                                                                 ==
-                                                                Classe.id_Classe).join(
+                                                                Classe.id_class).join(
             Price, Price.id_price == Procure.id_price).join(Provider,
                                                             Provider.id_provider == Procure.id_provider).all()
     else:
@@ -117,19 +124,51 @@ def searchFlight(type_seat: str = "", date_dep: str = "", date_arr: str = "",
 
     if result:
         line_format = (
-            "| {:<14} | {:<14} | {:<14} | {:<14} | {:<14} | {:<12} | {}")
+            "| {:<18} | {:<20} | {:<20} | {:<18} | {:<20} | {:<20} | {}")
         print(line_format.format("name_provider", "country_dep", "country_arr",
-                                 "date_dep", "date_arr", "Classe", "price"))
+                                 "date_dep", "date_arr", "classe", "price"))
 
-        for flight, provider, classe, price in result:
+        for flight, procure, classe, price, provider in result:
             print(line_format.format(provider.name_provider,
                                      flight.country_dep, flight.country_arr,
-                                     flight.date_dep, flight.date_arr,
+                                     str(flight.date_dep), str(flight.date_arr),
                                      classe.name_class, price.price_value))
 
     else:
         print("there is no records found for your request !")
 
+    return result
+
+
+# searchFlight()
+# searchFlight(provider_name="Air France")
+
+def getResultsFrom(result) -> dict[str, list]:
+    l: dict[str, list] = {
+        "price": [],
+        "country_dep": [],
+        "country_arr": [],
+        "date_dep": [],
+        "date_arr": [],
+        "provider_name": [],
+        "id_vol": [],
+    }
+    for flight, procure, classe, price, provider in result:
+        l["price"].append(price.price_value)
+        l["country_dep"].append(flight.country_dep)
+        l["country_arr"].append(flight.country_arr)
+        l["date_dep"].append(str(flight.date_dep))
+        l["date_arr"].append(str(flight.date_arr))
+        l["provider_name"].append(provider.name_provider)
+        l["id_vol"].append(flight.id_flight)
+
+    print(l)
+
+    return l
+
+
+# getResultsFrom(searchFlight(provider_name="Air France"))
+# getResultsFrom(searchFlight(price=350, cmp="supequals"))
 
 def bookFlight(classe: str, idflight: int, providername: str) -> str:
     global userconnect
@@ -189,7 +228,4 @@ def bookFlight(classe: str, idflight: int, providername: str) -> str:
         print(f"Erreur lors de la réservation : {str(e)}")
         return f"Erreur lors de la réservation : {str(e)}"
 
-
-
 # bookFlight("Economy", 1, "Air France")
-
