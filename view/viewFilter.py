@@ -1,5 +1,3 @@
-import math
-from tkinter.ttk import Combobox
 from typing import Union, TypedDict
 
 import model.utils
@@ -80,9 +78,11 @@ class Search(Frame):
             selected_price = float(selected_price)
         else:
             selected_price = math.inf
-        self.add_content(selected_seat_type, selected_date_dep, selected_date_arr,
+        self.add_content(selected_seat_type, selected_date_dep,
+                         selected_date_arr,
                          selected_country_dep,
-                         selected_country_arr, selected_price, selected_cmp, selected_provider_name)
+                         selected_country_arr, selected_price, selected_cmp,
+                         selected_provider_name)
 
     def add_content(self, type_seat="", date_dep="", date_arr="",
                     country_dep="", country_arr="", price=math.inf,
@@ -91,7 +91,8 @@ class Search(Frame):
         for widget in self.content_frame.winfo_children():
             widget.destroy()
 
-        self.results = searchFlight(type_seat,date_dep,date_arr, country_dep, country_arr, price,
+        self.results = searchFlight(type_seat, date_dep, date_arr, country_dep,
+                                    country_arr, price,
                                     cmp, providerName)
         self.row = 0
         self.create_title_Value({
@@ -120,8 +121,9 @@ class Search(Frame):
                     "date_arr": flight.date_arr,
                     "price": price.price_value,
                     "type_seat": classe.name_class,
-                    "Action": 1 if capacity_left[idx] else 1,
+                    "Action": 1 if capacity_left[idx] else 2,
                     "row": self.row,
+                    "provider_name": provider.name_provider
                 }
             )
             idx += 1
@@ -185,7 +187,8 @@ class Search(Frame):
         frame_country_dep: Frame = vie_define_frame(self.filter_frame, 3,
                                                     self.row)
         country_dep_label: Label = vie_define_label(frame_country_dep,
-                                                    "country_dep", 10, 3, self.row,
+                                                    "country_dep", 10, 3,
+                                                    self.row,
                                                     True)
         self.country_dep_var = StringVar()
         self.Combobox_country_dep: Combobox = vie_define_combobox_2(
@@ -201,7 +204,8 @@ class Search(Frame):
         frame_country_arr: Frame = vie_define_frame(self.filter_frame, 0,
                                                     self.row)
         country_arr_label: Label = vie_define_label(frame_country_arr,
-                                                    "country_arr", 10, 0, self.row,
+                                                    "country_arr", 10, 0,
+                                                    self.row,
                                                     True)
         self.country_dest_var = StringVar()
         self.Combobox_country_arr: Combobox = vie_define_combobox_2(
@@ -209,7 +213,6 @@ class Search(Frame):
             values,
             self.country_dest_var,
             col=0, row=self.row + 1, width=10)
-
 
         values = getResultsFrom(searchFlight())["date_dep"]
 
@@ -244,9 +247,9 @@ class Search(Frame):
         frame_provider: Frame = vie_define_frame(self.filter_frame, 3,
                                                  self.row)
         provider_name_label: Label = vie_define_label(frame_provider,
-                                                 "provider_name",
-                                                 10, 3, self.row,
-                                                 True)
+                                                      "provider_name",
+                                                      10, 3, self.row,
+                                                      True)
         self.provider_name_var = StringVar()
         self.Combobox_provider_arr: Combobox = vie_define_combobox_2(
             self.filter_frame,
@@ -282,58 +285,55 @@ class Search(Frame):
                                                   "quit",
                                                   col=2, row=self.row + 1)
 
-    def getPriceVar(self):
-        return self.price_var
+    def getGreetingBtn(self):
+        return self.btn_greeting
 
-    def getTypeSeatVar(self):
-        return self.type_seat_var
-
-    def getCountryDep(self):
-        return self.country_dep_var
-
-    def getCountryDest(self):
-        return self.country_dest_var
-
-    def getFilterBtn(self):
-        return self.btn_filter
+    def getProfilBtn(self):
+        return self.btn_profil
 
     def create_title_Value(self, l_print):
         col = 0
 
         for i in l_print.keys():
-            if i not in ["row", "parent", "Action"]:
+            if i not in ["row", "parent", "Action", "provider_name"]:
                 label_title = vie_define_label(l_print["parent"], l_print[i], 8,
-                                               col, l_print["row"], False,bg="white",
-                                             fill="black")
+                                               col, l_print["row"], False,
+                                               bg="white",
+                                               fill="black")
                 label_title.config(padx=10)
                 col += 1
 
         if l_print["Action"] == 0:
             label_title = vie_define_label(l_print["parent"], "Action", 8, col,
                                            l_print["row"], False, bg="white",
-                                             fill="black")
+                                           fill="black")
             label_title.config(padx=10)
 
 
         elif l_print["Action"] == 1:
             button_Action = vie_define_button(l_print["parent"],
-                                              lambda: print("hello"), "Take",
-                                              col, l_print["row"])
+                                              lambda: (self.reload(),
+                                                       bookFlight(l_print[
+                                                                      "type_seat"],
+                                                                  int(l_print[
+                                                                          "id_vol"]),
+                                                                  l_print[
+                                                                      "provider_name"])),
+                                              "Take",
+                                              col, l_print[
+                                                  "row"])
 
         else:
             label_title = vie_define_label(l_print["parent"], "Complet", 8,
-                                             col,
+                                           col,
                                            l_print["row"], False, bg="white",
-                                             fill="black")
+                                           fill="black")
             label_title.config(padx=10)
-        col += 1
+            col += 1
 
-
-
-if __name__ == "__main__":
-    root = Tk()
-    root.title("Search view")
-    root.geometry("650x500")
-    root.config(bg=COLOR_HEX)
-    vue_search = Search(root)
-    root.mainloop()
+            if __name__ == "__main__":
+                root = Tk()
+                root.title("Search view")
+                root.config(bg=COLOR_HEX)
+                vue_search = Search(root)
+                root.mainloop()
