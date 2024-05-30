@@ -1,6 +1,6 @@
 from tkinter import Tk, messagebox
 
-from controller.pageProfil import ControllerProfil
+from controller.pageFilter import ControllerSearch
 from model.requests import connectUser, addUser
 from view.viewConnection import Greeting
 
@@ -32,7 +32,7 @@ class ControllerGreeting():
                 messagebox.showinfo("Connection",
                                     "You successfully logged in !")
 
-                controller_search = ControllerProfil(root)
+                controller_search = ControllerSearch(root)
 
 
             else:

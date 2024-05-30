@@ -5,7 +5,8 @@ from sqlalchemy.orm import relationship, sessionmaker
 
 
 
-engine = create_engine("mysql+mysqlconnector://root:@localhost""/flightdeal",
+engine = create_engine("mysql+mysqlconnector://root:@localhost"
+                       "/flightdealnewversion",
                        echo=None)
 
 Base = declarative_base()

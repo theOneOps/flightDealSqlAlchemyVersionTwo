@@ -80,7 +80,7 @@ prices_data = [
 
 # class's table data
 
-classes_names = ["Economy","Premium Economy", "Business", "First Class"]
+classes_names = ["", "Economy","Premium Economy", "Business", "First Class"]
 
 classes_data = [
     {"capacity": 50, "name_class": "Economy"},

@@ -76,7 +76,7 @@ def searchFlight(type_seat: str = "", date_dep: str = "", date_arr: str = "",
                                                         Provider.id_provider == Procure.id_provider)
 
     if type_seat != "":
-        result = result.filter(Classe.name_Classe == type_seat)
+        result = result.filter(Classe.name_class == type_seat)
 
     if date_dep != "":
         result = result.filter(Flight.date_dep == date_dep)
@@ -145,13 +145,14 @@ def searchFlight(type_seat: str = "", date_dep: str = "", date_arr: str = "",
 
 def getResultsFrom(result) -> dict[str, list]:
     l: dict[str, list] = {
-        "price": [],
-        "country_dep": [],
-        "country_arr": [],
-        "date_dep": [],
-        "date_arr": [],
-        "provider_name": [],
-        "id_vol": [],
+        "price": [""],
+        "country_dep": [""],
+        "country_arr": [""],
+        "date_dep": [""],
+        "date_arr": [""],
+        "provider_name": [""],
+        "id_vol": [""],
+        "capacity_left": [],
     }
     for flight, procure, classe, price, provider in result:
         l["price"].append(price.price_value)
@@ -161,11 +162,38 @@ def getResultsFrom(result) -> dict[str, list]:
         l["date_arr"].append(str(flight.date_arr))
         l["provider_name"].append(provider.name_provider)
         l["id_vol"].append(flight.id_flight)
+        l["capacity_left"].append(flightHasCapacityLeft(int(flight.id_flight),
+                                                        int(procure.id_class)))
 
     print(l)
 
     return l
 
+def flightHasCapacityLeft(idflight: int, classe:int)->bool:
+    # Vérification de la relation flight-provider-class
+    result = session.query(Procure, Provider).join(Provider,
+                                                   Procure.id_provider ==
+                                                   Provider.id_provider)
+    procure = session.query(Procure).filter(
+        Procure.id_flight == idflight,
+        Procure.id_provider == Provider.id_provider,
+        Procure.class_.has(id_class=classe)
+    ).first()
+
+    if not procure:
+        return "Le fournisseur ne propose pas cette classe pour ce vol."
+
+    # Vérification de la disponibilité des sièges
+    class_capacity = procure.class_.capacity
+    current_bookings = session.query(Book).filter(
+        Book.id_flight == idflight,
+        Book.id_class == procure.class_.id_class
+    ).count()
+
+    if current_bookings >= class_capacity:
+        return False
+
+    return True
 
 # getResultsFrom(searchFlight(provider_name="Air France"))
 # getResultsFrom(searchFlight(price=350, cmp="supequals"))
