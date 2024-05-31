@@ -1,5 +1,6 @@
 from view.widgets_functions import *
 from model.requests import userConnect
+from model.utils import center_window
 
 global userConnect
 
@@ -7,6 +8,7 @@ class Greeting:
 
     def __init__(self, root: Tk):
         self.root = root
+        center_window(self.root, 870, 600)
         self.root.geometry("330x480")
         self.container_title = vie_define_frame(self.root, 0, 0, pad=10,
                                                 columnspan=True)
@@ -41,32 +43,35 @@ class Greeting:
         self.email_entry = vie_define_entry(self.email_frame, 20, 0, 6,
                                             columnspan=True)
 
-        self.btn_create = vie_define_button(self.email_frame, string="create",
+        self.btns_frame = vie_define_frame(self.container_connection, 0, 7)
+
+
+        self.btn_create = vie_define_button(self.btns_frame, string="Create",
                                             col=0, row=7,
                                             function=lambda: print(
-                                                "create account"),
-                                            columnspan=False)
+                                                "create account"))
 
-        self.btn_login = vie_define_button(self.email_frame, string="login",
-                                           col=0, row=7,
-                                           function=lambda: print("login"),
-                                           columnspan=True)
-
-        self.btn_logout = vie_define_button(self.email_frame, string="logout",
+        self.btn_login = vie_define_button(self.btns_frame, string="Login",
                                            col=1, row=7,
-                                           function=lambda: print("logout"),
-                                           columnspan=False)
+                                           function=lambda: print("login"))
+
+        self.btn_logout = vie_define_button(self.btns_frame, string="Logout",
+                                           col=2, row=7,
+                                           function=lambda: print("logout"))
 
 
 
         # Correct positions to avoid overlap
-        self.btn_quit = vie_define_button(root, string="quit", col=0, row=8,
+        self.btn_quit = vie_define_button(self.container_title,
+                                          string="Quit", col=0, row=8,
                                           function=self.quitRoot,
                                           columnspan=False)
-        self.btn_profil = vie_define_button(root, string="profil", col=0, row=8,
+        self.btn_profil = vie_define_button(self.container_title,
+                                            string="Profil", col=0, row=8,
                                             function=lambda: print("profil"),
                                             columnspan=True)
-        self.btn_search = vie_define_button(root, string="search", col=1, row=8,
+        self.btn_search = vie_define_button(self.container_title,
+                                            string="Search", col=1, row=8,
                                             function=lambda: print("search"),
                                             columnspan=False)
 

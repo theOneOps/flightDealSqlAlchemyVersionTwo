@@ -7,6 +7,7 @@ class ControllerSearch:
         for widget in root.winfo_children():
             widget.destroy()
 
+        root.geometry("330x480")
         root.title("Search view")
         self.view = Search(root)
 
