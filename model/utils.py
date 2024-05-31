@@ -123,7 +123,7 @@ books_data = [
 ]
 
 
-def center_window(root, width: int, height: int, offset_y: int = 80):
+def center_window(root, width: int, height: int, offset_y: int = 55):
     # Get screen width and height
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
