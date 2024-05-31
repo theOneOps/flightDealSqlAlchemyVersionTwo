@@ -405,3 +405,24 @@ def flightHasCapacityLeft(idflight: int, classe: int) -> bool:
 
 # getResultsFrom(searchFlight(provider_name="Air France"))
 # getResultsFrom(searchFlight(price=350, cmp="supequals"))
+
+def cancelbookingFlight(idbook : int ):
+    global userconnect
+
+    if userConnect["id"] is None:
+        # print("You need login to proceed")
+        return "You need login to proceed"
+    try:
+        # Recherche du vol
+        book = session.query(Book).filter(
+            Book.id_book == idbook).first()
+        if not book:
+            return (f"Vous n'avez aucune une reservation sous cette id :"
+                    f" {idbook}.")
+        session.delete(book)
+        session.commit()
+        # print(f"Vous avez réussie à annuler votre reservation avec l'id "
+        #        f":{idbook}")
+        return f"Vous avez réussie à annuler votre reservation avec l'id :{idbook}"
+    except NoResultFound:
+        return "Erreur lors de la réservation : données introuvables."

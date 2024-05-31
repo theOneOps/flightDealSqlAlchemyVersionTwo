@@ -1,3 +1,4 @@
+from tkinter import messagebox
 from typing import Union, TypedDict
 
 import model.utils
@@ -16,7 +17,7 @@ class myDict(TypedDict):
     date_dep: str
     date_arr: str
     price: str
-    Action: int  # 0 -> "Action" 1 -> Add's button, 2:"Complet"
+    Action: int
     row: int
 
 
@@ -27,6 +28,7 @@ class Search(Frame):
         self.root = root
         self.row = 0
         self.results = []
+        model.utils.center_window(self.root, 870, 600)
         self.root.geometry("870x600")
         self.grid(
             sticky=NSEW)  # Ensure the frame is placed and fills the window using grid
@@ -291,6 +293,21 @@ class Search(Frame):
     def getProfilBtn(self):
         return self.btn_profil
 
+    def vie_define_button_with_check(self, root, string, col, row, l_print,
+                                     columnspan=False):
+        def action():
+            if isUserConnected():
+                bookFlight(l_print["type_seat"],
+                           int(l_print["id_vol"]),
+                           l_print["provider_name"])
+                self.reload()
+            else:
+                messagebox.showinfo("Book's trial", "You need to login first "
+                                                    "to make a book")
+
+        return vie_define_button(root, action, string, col, row,
+                                 columnspan=columnspan)
+
     def create_title_Value(self, l_print):
         col = 0
 
@@ -311,17 +328,11 @@ class Search(Frame):
 
 
         elif l_print["Action"] == 1:
-            button_Action = vie_define_button(l_print["parent"],
-                                              lambda: (self.reload(),
-                                                       bookFlight(l_print[
-                                                                      "type_seat"],
-                                                                  int(l_print[
-                                                                          "id_vol"]),
-                                                                  l_print[
-                                                                      "provider_name"])),
-                                              "Take",
-                                              col, l_print[
-                                                  "row"])
+            button_Action = self.vie_define_button_with_check(l_print[
+                                                                  "parent"],
+                                                              "Take", col,
+                                                              l_print["row"],
+                                                              l_print)
 
         else:
             label_title = vie_define_label(l_print["parent"], "Complet", 8,

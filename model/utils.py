@@ -121,3 +121,14 @@ books_data = [
     {"flight_number": 1007, "date_book": date(2024, 5, 26), "id_price": 7,
      "id_class": 3, "id_flight": 7, "id_user": 7}
 ]
+
+def center_window(root, width:int, height:int):
+    # Get screen width and height
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    # Calculate position x and y coordinates
+    x = (screen_width // 2) - (width // 2)
+    y = (screen_height // 2) - (height // 2)
+
+    root.geometry(f"{width}x{height}+{x}+{y}")

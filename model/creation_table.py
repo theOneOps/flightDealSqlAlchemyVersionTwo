@@ -66,9 +66,9 @@ class Book(Base):
     id_flight = Column(Integer, ForeignKey('flight.id_flight'))
     id_user = Column(Integer, ForeignKey('users.id_user'))
 
-    __table_args__ = (UniqueConstraint('flight_number', 'id_user',
-                                       'id_class','id_flight',
-                                       name='uicfx_flight_number_id_user_id_class_id_flight'),)
+    # __table_args__ = (UniqueConstraint('flight_number', 'id_user',
+    #                                    'id_class','id_flight',
+    #                                    name='uicfx_flight_number_id_user_id_class_id_flight'),)
 
     price = relationship("Price", back_populates="books")
     class_ = relationship("Classe", back_populates="books")

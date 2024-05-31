@@ -1,6 +1,8 @@
+from tkinter import messagebox
 from typing import Union, TypedDict
 
 import model.utils
+from model.utils import center_window
 from model.requests import *
 from view.widgets_functions import *
 
@@ -17,6 +19,7 @@ class myDict(TypedDict):
     date_arr: str
     date_book: str
     price: str
+    id_book: str
     Action: int  # 0 -> "Action" 1 -> Add's button, 2:"Complet"
     row: int
 
@@ -28,6 +31,7 @@ class Profil(Frame):
         self.root = root
         self.row = 0
         self.results = []
+        center_window(self.root, 1020, 540)
         self.root.geometry("1020x540")
         self.grid(
             sticky=NSEW)  # Ensure the frame is placed and fills the window using grid
@@ -81,7 +85,7 @@ class Profil(Frame):
         else:
             selected_price = math.inf
         self.add_content(selected_seat_type, selected_date_dep,
-                         selected_date_arr,selected_date_book,
+                         selected_date_arr, selected_date_book,
                          selected_country_dep,
                          selected_country_arr, selected_price, selected_cmp,
                          selected_provider_name)
@@ -107,6 +111,7 @@ class Profil(Frame):
             "date_arr": "date_arr",
             "date_book": "date_book",
             "price": "price",
+            "id_book": "id_book",
             "provider_name": "provider_name",
             "type_seat": "type_seat",
             "Action": 0,
@@ -125,6 +130,7 @@ class Profil(Frame):
                     "date_arr": flight.date_arr,
                     "date_book": book.date_book,
                     "price": price.price_value,
+                    "id_book": book.id_book,
                     "provider_name": provider.name_provider,
                     "type_seat": classe.name_class,
                     "Action": 1,  # if capacity_left[idx] else 2,
@@ -157,7 +163,7 @@ class Profil(Frame):
             values,
             self.type_seat_var, row=self.row + 1, width=10)
 
-        values = getResultsFrom(searchBook(), False)["price"]
+        values = list(set(getResultsFrom(searchBook(), False)["price"]))
 
         frame_price: Frame = vie_define_frame(self.filter_frame, 1,
                                               self.row)
@@ -187,7 +193,7 @@ class Profil(Frame):
             self.cmp_var,
             col=2, row=self.row + 1, width=10)
 
-        values = getResultsFrom(searchBook(), False)["country_dep"]
+        values = list(set(getResultsFrom(searchBook(), False)["country_dep"]))
 
         frame_country_dep: Frame = vie_define_frame(self.filter_frame, 3,
                                                     self.row)
@@ -204,7 +210,7 @@ class Profil(Frame):
 
         self.row += 2
 
-        values = getResultsFrom(searchBook(), False)["country_arr"]
+        values = list(set(getResultsFrom(searchBook(), False)["country_arr"]))
 
         frame_country_arr: Frame = vie_define_frame(self.filter_frame, 0,
                                                     self.row)
@@ -219,7 +225,7 @@ class Profil(Frame):
             self.country_dest_var,
             col=0, row=self.row + 1, width=10)
 
-        values = getResultsFrom(searchBook(), False)["date_dep"]
+        values = list(set(getResultsFrom(searchBook(), False)["date_dep"]))
 
         frame_date_dep: Frame = vie_define_frame(self.filter_frame, 1,
                                                  self.row)
@@ -233,7 +239,7 @@ class Profil(Frame):
             self.date_dep_var,
             col=1, row=self.row + 1, width=10)
 
-        values = getResultsFrom(searchBook(), False)["date_arr"]
+        values = list(set(getResultsFrom(searchBook(), False)["date_arr"]))
 
         frame_date_arr: Frame = vie_define_frame(self.filter_frame, 2,
                                                  self.row)
@@ -247,7 +253,7 @@ class Profil(Frame):
             self.date_arr_var,
             col=2, row=self.row + 1, width=10)
 
-        values = getResultsFrom(searchBook(), False)["provider_name"]
+        values = list(set(getResultsFrom(searchBook(), False)["provider_name"]))
 
         frame_provider: Frame = vie_define_frame(self.filter_frame, 3,
                                                  self.row)
@@ -262,7 +268,7 @@ class Profil(Frame):
             self.provider_name_var,
             col=3, row=self.row + 1, width=10)
 
-        values = getResultsFrom(searchBook(), False)["date_book"]
+        values = list(set(getResultsFrom(searchBook(), False)["date_book"]))
 
         self.row += 2
 
@@ -313,11 +319,24 @@ class Profil(Frame):
     def getSearchBtn(self):
         return self.btn_search
 
+    def vie_define_button_with_check(self, l_print,
+                                     text, col, row, columnspan=False):
+        def action():
+            if isUserConnected():
+                cancelbookingFlight(int(l_print["id_book"]))
+                self.reload()
+            else:
+                messagebox.showinfo("Cancel Book's trial",
+                                    "you need to login first before canceling a trial")
+
+        return vie_define_button(l_print["parent"], action, text, col, row,
+                                 columnspan)
+
     def create_title_Value(self, l_print):
         col = 0
 
         for i in l_print.keys():
-            if i not in ["row", "parent", "Action"]:
+            if i not in ["row", "parent", "Action", "id_book"]:
                 label_title = vie_define_label(l_print["parent"], l_print[i], 8,
                                                col, l_print["row"], False,
                                                bg="white",
@@ -333,11 +352,9 @@ class Profil(Frame):
 
 
         elif l_print["Action"] == 1:
-            button_Action = vie_define_button(l_print["parent"],
-                                              lambda: print("cancel"),
-                                              "Cancel",
-                                              col, l_print[
-                                                  "row"])
+            button_Action = self.vie_define_button_with_check(l_print, "Cancel",
+                                                              col,
+                                                              l_print["row"])
 
         else:
             label_title = vie_define_label(l_print["parent"], "Complet", 8,

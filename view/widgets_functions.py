@@ -58,7 +58,7 @@ def vie_define_combobox_2(frameParent: Frame, values: tuple[int], value_var:
 StringVar, col: int = 0, row: int = 0, width: int = 5,
                           columnspan: bool = False) -> Combobox:
     spin: ttk.Combobox = ttk.Combobox(frameParent, values=values, width=width,
-                                      textvariable=value_var)
+                                      textvariable=value_var, state='readonly')
     if columnspan:
         spin.grid(column=col, row=row, columnspan=2)
     else:
