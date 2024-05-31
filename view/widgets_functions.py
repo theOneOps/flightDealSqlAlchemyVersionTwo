@@ -150,7 +150,7 @@ def vie_define_label(
     :return: the label
     """
     label = Label(
-        parent, text=text, font=("Palatino", font_size + 5, "bold"), bg=bg,
+        parent, text=text, font=("Palatino", font_size + 3, "bold"), bg=bg,
         fg=fill
     )
     if columnspan:

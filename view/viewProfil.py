@@ -28,7 +28,7 @@ class Profil(Frame):
         self.root = root
         self.row = 0
         self.results = []
-        self.root.geometry("1200x700")
+        self.root.geometry("1020x540")
         self.grid(
             sticky=NSEW)  # Ensure the frame is placed and fills the window using grid
         self.create_scrollable_canvas()
@@ -41,7 +41,7 @@ class Profil(Frame):
 
         # Create a canvas
         self.canvas = Canvas(self)
-        self.canvas.config(width=1100, height=300)
+        self.canvas.config(width=1000, height=200)
         self.canvas.grid(row=0, column=0, sticky=NSEW)
 
         # Add a scrollbar to the canvas
@@ -141,7 +141,7 @@ class Profil(Frame):
 
         self.filter_frame = vie_define_lb_frame(self.root, 0,
                                                 self.row,
-                                                columnspan=True)
+                                                columnspan=False)
 
         values = model.utils.classes_names
 

@@ -15,7 +15,7 @@ def is_not_empty_or_whitespace(entry: str):
 class ControllerGreeting():
     def __init__(self, root):
         self.view = Greeting(root)
-
+        root.title("Welcome view !")
         def createAccount():
             name_entry = self.view.getNameEntry().get()
             passwd_entry = self.view.getPasswdEntry().get()
@@ -42,6 +42,7 @@ class ControllerGreeting():
             for widget in root.winfo_children():
                 widget.destroy()
 
+            root.geometry("330x480")
             controller_connection = ControllerGreeting(root)
 
         def login():

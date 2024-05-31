@@ -7,7 +7,7 @@ class Greeting:
 
     def __init__(self, root: Tk):
         self.root = root
-        self.root.geometry("350x500")
+        self.root.geometry("330x480")
         self.container_title = vie_define_frame(self.root, 0, 0, pad=10,
                                                 columnspan=True)
         self.title = vie_define_label(self.container_title,

@@ -27,7 +27,7 @@ class Search(Frame):
         self.root = root
         self.row = 0
         self.results = []
-        self.root.geometry("970x600")
+        self.root.geometry("870x600")
         self.grid(
             sticky=NSEW)  # Ensure the frame is placed and fills the window using grid
         self.create_scrollable_canvas()
@@ -40,7 +40,7 @@ class Search(Frame):
 
         # Create a canvas
         self.canvas = Canvas(self)
-        self.canvas.config(width=950, height=300)
+        self.canvas.config(width=840, height=300)
         self.canvas.grid(row=0, column=0, sticky=NSEW)
 
         # Add a scrollbar to the canvas
