@@ -16,6 +16,3 @@ class ControllerSearch:
         self.view.getProfilBtn().config(command=funcProfil)
 
         # self.view.getGreetingBtn()
-
-        # Additional setup if necessary
-        print("lets go !")
