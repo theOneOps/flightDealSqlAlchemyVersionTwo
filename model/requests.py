@@ -11,11 +11,16 @@ from sqlalchemy.exc import \
 
 from model.creation_table import *  # Import all from creation_table to access database table definitions.
 
+from typing import TypedDict, Optional
+
 # Define a type alias for better clarity and type hinting for user information.
-type userType = {"id": int, "name": str, "passwd": str}
+class UserType(TypedDict):
+    id: Optional[int]
+    name: str
+    passwd: str
 
 # Initialize a variable to keep track of the currently connected user.
-userConnect: userType = {"id": None, "name": "", "passwd": ""}
+userConnect: UserType = {"id": None, "name": "", "passwd": ""}
 
 # Create a session object from sessionmaker to handle transactions with the database.
 Session = sessionmaker(bind=engine)

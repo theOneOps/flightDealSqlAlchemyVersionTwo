@@ -15,8 +15,8 @@ Base = declarative_base()
 class Users(Base):
     __tablename__ = 'users'
     id_user = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False)
-    email = Column(String(50))
+    name = Column(String(50), nullable=False, unique=True)
+    email = Column(String(50), unique=True)
     password = Column(String(50), nullable=False)
     books = relationship("Book", back_populates="user")
 
