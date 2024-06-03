@@ -1,9 +1,7 @@
-from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, UniqueConstraint, PrimaryKeyConstraint
+from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
-
-
 
 engine = create_engine("mysql+mysqlconnector://root:@localhost"
                        "/flightdealnewversion",
@@ -66,10 +64,6 @@ class Book(Base):
     id_flight = Column(Integer, ForeignKey('flight.id_flight'))
     id_user = Column(Integer, ForeignKey('users.id_user'))
 
-    # __table_args__ = (UniqueConstraint('flight_number', 'id_user',
-    #                                    'id_class','id_flight',
-    #                                    name='uicfx_flight_number_id_user_id_class_id_flight'),)
-
     price = relationship("Price", back_populates="books")
     class_ = relationship("Classe", back_populates="books")
     flight = relationship("Flight", back_populates="books")
@@ -89,6 +83,7 @@ class Procure(Base):
     provider = relationship("Provider", back_populates="procures")
     class_ = relationship("Classe", back_populates="procures")
     price = relationship("Price", back_populates="procures")
+
 
 # Configuration de la connexion à la base de données (à adapter selon votre cas)
 Base.metadata.create_all(engine)
